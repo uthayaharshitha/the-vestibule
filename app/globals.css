@@ -1,0 +1,620 @@
+@import "tailwindcss";
+
+/* CSS Variables for Theme System (Permanently Dark) */
+:root {
+  --bg-main: #050505;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --text-main: #f0f0f0;
+  --text-secondary: #a3a3a3;
+  --text-tertiary: #737373;
+  --border-color: rgba(255, 255, 255, 0.1);
+}
+
+/* Smooth transitions for theme switching */
+* {
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+@theme inline {
+  --font-sans: var(--font-space-grotesk);
+  --font-mono: var(--font-jetbrains-mono);
+  --font-display: var(--font-space-grotesk);
+  --font-serif: var(--font-space-grotesk);
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  background: var(--bg-main);
+  color: var(--text-main);
+  font-family: var(--font-space-grotesk), sans-serif;
+  letter-spacing: -0.01em;
+}
+
+/* ─── PART 1: Capsule page fade-in ─────────────────── */
+@keyframes capsuleFadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+.capsule-page-transition {
+  opacity: 0;
+  animation: capsuleFadeIn 250ms ease forwards;
+}
+
+
+
+/* ─── PART 4: Grain overlay ─────────────────────────── */
+.grain-overlay {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  opacity: 0.032;
+  mix-blend-mode: overlay;
+  /* SVG fractal noise — no file dependency, no animation cost */
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='300' height='300'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='300' height='300' filter='url(%23n)'/%3E%3C/svg%3E");
+  background-repeat: repeat;
+  background-size: 300px 300px;
+}
+
+/* ─── PART 5: Read mode vignette ────────────────────── */
+.read-mode-root {
+  position: relative;
+}
+
+.read-mode-root::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 500;
+  background: radial-gradient(circle at center,
+      rgba(0, 0, 0, 0) 60%,
+      rgba(0, 0, 0, 0.15) 100%);
+}
+
+/* ─── Read mode layout ───────────────────────────────── */
+.read-mode {
+  transition: opacity 0.3s ease;
+}
+
+body[data-read-mode="true"] .pt-16,
+body[data-read-mode="true"] main {
+  padding-top: 0 !important;
+  transition: padding-top 0.3s ease;
+}
+
+/* ─── Global form inputs ──────────────────────────── */
+input,
+textarea,
+select {
+  color: var(--text-main);
+  background: var(--bg-secondary);
+  border-color: var(--border-color);
+  color-scheme: dark;
+}
+
+/* ─── Archive Component Consistency ───────────────────── */
+.archive-input {
+  @apply w-full bg-[#111111] border border-white/10 text-white placeholder-white/30 px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors uppercase tracking-widest font-mono;
+}
+
+.archive-btn {
+  @apply w-full py-3 px-4 bg-[#111111] border border-white/10 text-white text-sm uppercase tracking-widest hover:bg-white/10 transition-colors disabled:opacity-50 disabled:cursor-not-allowed font-mono;
+}
+
+
+/* ─── Legal / footer links ───────────────────────────── */
+.legal-link {
+  font-size: 0.75rem;
+  color: var(--text-tertiary);
+  text-decoration: none;
+  opacity: 1;
+  transition: opacity 0.15s;
+}
+
+.legal-link:hover {
+  opacity: 0.6;
+}
+
+.legal-link-inline {
+  font-size: 0.875rem;
+  color: var(--text-secondary);
+  text-decoration: none;
+  transition: opacity 0.15s;
+}
+
+.legal-link-inline:hover {
+  opacity: 0.6;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CAPSULE PAGE DESIGN SYSTEM — scoped to capsule page only
+   ═══════════════════════════════════════════════════════════════════ */
+
+/* Double-border container */
+.capsule-double-border {
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  padding: 2.5rem;
+  position: relative;
+  overflow: hidden;
+}
+
+@media (min-width: 768px) {
+  .capsule-double-border {
+    padding: 3rem;
+  }
+}
+
+
+
+/* Subtle gradient overlay inside capsule */
+.capsule-bg-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(135deg, rgba(127, 19, 236, 0.04) 0%, transparent 60%);
+  pointer-events: none;
+  border-radius: 6px;
+}
+
+/* 2-column body grid */
+.capsule-body-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 2rem;
+}
+
+@media (min-width: 1024px) {
+  .capsule-body-grid {
+    grid-template-columns: 2fr 1fr;
+    gap: 3rem;
+  }
+}
+
+.capsule-body-left {
+  min-width: 0;
+}
+
+.capsule-body-right {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+  min-width: 0;
+}
+
+/* Sidebar panel (Sonic Profile / Sensory Notes) */
+.capsule-sidebar-panel {
+  padding: 1.25rem 1.5rem;
+  border-radius: 6px;
+  border: 1px solid rgba(127, 19, 236, 0.28);
+  background: rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(4px);
+}
+
+.capsule-sidebar-label {
+  font-size: 0.6rem;
+  font-family: var(--font-jetbrains-mono), 'Courier New', monospace;
+  font-weight: 700;
+  letter-spacing: 0.3em;
+  text-transform: uppercase;
+  color: rgba(127, 19, 236, 0.65);
+  margin-bottom: 1rem;
+}
+
+/* Capsule action bar buttons */
+.capsule-action-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  font-family: var(--font-jetbrains-mono), 'Courier New', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  transition: opacity 0.15s ease;
+}
+
+.capsule-action-btn:hover {
+  opacity: 1 !important;
+}
+
+/* Waveform bar pulse animation for audio player */
+@keyframes capsuleBarPulse {
+  from {
+    transform: scaleY(0.6);
+  }
+
+  to {
+    transform: scaleY(1);
+  }
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   VHS LOGIN PAGE EFFECTS
+   ═══════════════════════════════════════════════════════════════════ */
+
+@keyframes vhs-noise {
+
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+
+  10% {
+    transform: translate(-5%, -5%);
+  }
+
+  20% {
+    transform: translate(-10%, 5%);
+  }
+
+  30% {
+    transform: translate(5%, -10%);
+  }
+
+  40% {
+    transform: translate(-5%, 15%);
+  }
+
+  50% {
+    transform: translate(-10%, 5%);
+  }
+
+  60% {
+    transform: translate(15%, 0);
+  }
+
+  70% {
+    transform: translate(0, 10%);
+  }
+
+  80% {
+    transform: translate(-15%, 0);
+  }
+
+  90% {
+    transform: translate(10%, 5%);
+  }
+}
+
+@keyframes vhs-scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes vhs-flicker {
+  0% {
+    opacity: 0.95;
+  }
+
+  5% {
+    opacity: 0.85;
+  }
+
+  10% {
+    opacity: 0.95;
+  }
+
+  15% {
+    opacity: 0.9;
+  }
+
+  25% {
+    opacity: 0.8;
+  }
+
+  30% {
+    opacity: 1;
+  }
+
+  100% {
+    opacity: 0.98;
+  }
+}
+
+@keyframes vhs-jump {
+  0% {
+    transform: translateY(0);
+  }
+
+  98% {
+    transform: translateY(0);
+  }
+
+  99% {
+    transform: translateY(-2px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+.vhs-static {
+  position: fixed;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background-image: url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyMDAiIGhlaWdodD0iMjAwIj48ZmlsdGVyIGlkPSJuIj48ZmVUdXJidWxlbmNlIHR5cGU9ImZyYWN0YWxOb2lzZSIgYmFzZUZyZXF1ZW5jeT0iMC42NSIgbnVtT2N0YXZlcz0iMyIgc3RpdGNoVGlsZXM9InN0aXRjaCIvPjwvZmlsdGVyPjxyZWN0IHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbHRlcj0idXJsKCNuKSIvPjwvc3ZnPg==');
+  opacity: 0.12;
+  z-index: 1;
+  pointer-events: none;
+  animation: vhs-noise 0.2s steps(2) infinite;
+}
+
+.vhs-lines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(to bottom,
+      transparent,
+      transparent 50%,
+      rgba(0, 0, 0, 0.4) 50%,
+      rgba(0, 0, 0, 0.4));
+  background-size: 100% 4px;
+  z-index: 40;
+  pointer-events: none;
+}
+
+.vhs-tracking-distortion {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 2px;
+  background: rgba(255, 255, 255, 0.15);
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
+  z-index: 45;
+  animation: vhs-scanline 8s linear infinite;
+}
+
+.vhs-vignette {
+  background: radial-gradient(circle, transparent 30%, rgba(0, 0, 0, 0.9) 150%);
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.vhs-chromatic-aberration {
+  text-shadow: 1.5px 0 1px rgba(255, 0, 0, 0.6), -1.5px 0 1px rgba(0, 0, 255, 0.6);
+}
+
+.vhs-button {
+  position: relative;
+  overflow: hidden;
+  transition: all 0.2s ease;
+}
+
+.vhs-button::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: repeating-linear-gradient(0deg, transparent, transparent 1px, rgba(255, 255, 255, 0.05) 2px);
+  pointer-events: none;
+}
+
+.vhs-button:hover {
+  background-color: rgba(255, 255, 255, 0.1);
+  transform: scale(1.02);
+  box-shadow: 0 0 15px rgba(255, 255, 255, 0.1);
+}
+
+.vhs-screen-jitter {
+  animation: vhs-jump 4s infinite, vhs-flicker 0.15s infinite;
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   CYBER ARCHIVE MODE (FEED VIEW & HEADER)
+   ═══════════════════════════════════════════════════════════════════ */
+
+.grain-subtle {
+  pointer-events: none;
+  position: fixed;
+  inset: 0;
+  z-index: 10;
+  opacity: 0.005;
+  mix-blend-mode: overlay;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.95' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+}
+
+.cyber-outline {
+  border: 1px solid currentColor;
+  padding: 2px;
+  position: relative;
+  transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.cyber-outline:hover {
+  transform: translateY(-8px) scale(1.02);
+  z-index: 40;
+}
+
+.cyber-outline::before {
+  content: '';
+  position: absolute;
+  inset: -4px;
+  border: 1px solid currentColor;
+  opacity: 0.4;
+  pointer-events: none;
+  clip-path: polygon(0 0, 10% 0, 10% 2px, 90% 2px, 90% 0, 100% 0, 100% 100%, 90% 100%, 90% calc(100% - 2px), 10% calc(100% - 2px), 10% 100%, 0 100%);
+}
+
+.vestibular-logo {
+  width: 40px;
+  height: 40px;
+  position: relative;
+}
+
+.vestibular-logo .ring {
+  position: absolute;
+  border: 1px solid currentColor;
+  border-radius: 50%;
+}
+
+.vestibular-logo .ring-1 {
+  width: 14px;
+  height: 14px;
+  top: 0;
+  left: 0;
+}
+
+.vestibular-logo .ring-2 {
+  width: 14px;
+  height: 14px;
+  top: 8px;
+  left: 12px;
+}
+
+.vestibular-logo .ring-3 {
+  width: 14px;
+  height: 14px;
+  top: 18px;
+  left: 4px;
+}
+
+.vestibular-logo .canal-line {
+  position: absolute;
+  width: 20px;
+  height: 1px;
+  background: currentColor;
+  top: 30px;
+  left: 18px;
+  transform: rotate(45deg);
+}
+
+.search-placeholder::placeholder {
+  color: rgba(255, 255, 255, 0.3);
+}
+
+/* ═══════════════════════════════════════════════════════════════════
+   ABOUT PAGE: VHS SURVEILLANCE OVERLAYS
+   ═══════════════════════════════════════════════════════════════════ */
+
+.about-vhs-grain {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 50;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+  opacity: 0.003;
+  mix-blend-mode: overlay;
+}
+
+.about-scanlines {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 51;
+  background: linear-gradient(to bottom,
+      rgba(18, 16, 16, 0) 50%,
+      rgba(0, 0, 0, 0.1) 50%);
+  background-size: 100% 4px;
+}
+
+.about-chromatic-text {
+  text-shadow: -1px 0 #ff003c, 1px 0 #00f0ff;
+  letter-spacing: 0.025em;
+}
+
+.about-cyber-frame {
+  border: 1px solid #00f0ff;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0, 240, 255, 0.05);
+}
+
+.about-cyber-frame::before {
+  content: '';
+  position: absolute;
+  top: -4px;
+  left: -4px;
+  right: -4px;
+  bottom: -4px;
+  border: 1px solid rgba(0, 240, 255, 0.2);
+  pointer-events: none;
+}
+
+@keyframes blink {
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0;
+  }
+}
+
+.about-blink {
+  animation: blink 1.5s infinite steps(1);
+}
+
+@keyframes flicker {
+  0% {
+    opacity: 0.97;
+  }
+
+  5% {
+    opacity: 0.95;
+  }
+
+  10% {
+    opacity: 0.9;
+  }
+
+  15% {
+    opacity: 0.98;
+  }
+
+  20% {
+    opacity: 0.94;
+  }
+
+  25% {
+    opacity: 0.99;
+  }
+
+  30% {
+    opacity: 0.92;
+  }
+
+  100% {
+    opacity: 0.98;
+  }
+}
+
+.about-flicker {
+  animation: flicker 0.15s infinite;
+}
