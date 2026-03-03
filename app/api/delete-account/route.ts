@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { createClient } from '@supabase/supabase-js';
 
+// Prevent Next.js from statically evaluating this route at build time
+export const dynamic = 'force-dynamic';
+
 export async function DELETE(req: NextRequest) {
     // Create admin client lazily inside handler (not at module level)
     // so it doesn't fail at build time when env vars aren't set yet
