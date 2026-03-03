@@ -8,8 +8,8 @@ export async function DELETE(req: NextRequest) {
     // Create admin client lazily inside handler (not at module level)
     // so it doesn't fail at build time when env vars aren't set yet
     const supabaseAdmin = createClient(
-        process.env.NEXT_PUBLIC_SUPABASE_URL!,
-        process.env.SUPABASE_SERVICE_ROLE_KEY!,
+        process.env.SUPABASE_URL ?? process.env.NEXT_PUBLIC_SUPABASE_URL ?? '',
+        process.env.SUPABASE_SERVICE_ROLE_KEY ?? '',
         { auth: { autoRefreshToken: false, persistSession: false } }
     );
 
