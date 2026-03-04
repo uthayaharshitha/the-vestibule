@@ -90,6 +90,29 @@ export default function AboutPage() {
                             </p>
                         </div>
                     </section>
+
+                    {/* Roles Section */}
+                    <section className="space-y-8">
+                        <div className="border-l-2 border-[#00f0ff]/30 pl-6 space-y-2">
+                            <h3 className="text-gray-200 font-['Space_Grotesk'] text-sm tracking-widest uppercase">The Wanderer</h3>
+                            <p className="text-gray-400 leading-relaxed font-mono text-[13px] md:text-sm">
+                                Slip into a state of immersion. This is a sanctuary for those looking to disconnect from the noise, providing an immersive environment to inhabit without the pressure of performance or evaluation.
+                            </p>
+                        </div>
+                        <div className="border-l-2 border-[#00f0ff]/30 pl-6 space-y-2">
+                            <h3 className="text-gray-200 font-['Space_Grotesk'] text-sm tracking-widest uppercase">The Weaver</h3>
+                            <p className="text-gray-400 leading-relaxed font-mono text-[13px] md:text-sm">
+                                Engage in active creation. Contribute your own renders, narratives, writings, artwork, photography — make your own capsules and add them to the collective archive. Here, work is seen for its intrinsic value and the relief of expression, not for viral reach.
+                            </p>
+                        </div>
+                    </section>
+
+                    {/* Closing */}
+                    <section className="pt-4 border-t border-white/5">
+                        <p className="text-gray-500 font-mono text-[11px] tracking-[0.25em] uppercase">
+                            Step out of the loop. Enter the archive.
+                        </p>
+                    </section>
                 </div>
 
             </div>
