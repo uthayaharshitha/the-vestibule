@@ -6,9 +6,10 @@ import { getCurrentUser } from '@/lib/auth';
 
 interface SaveButtonProps {
     capsuleId: string;
+    textColor?: string; // optional — used in read mode to match capsule theme
 }
 
-export default function SaveButton({ capsuleId }: SaveButtonProps) {
+export default function SaveButton({ capsuleId, textColor }: SaveButtonProps) {
     const [saved, setSaved] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
     const [loading, setLoading] = useState(false);
@@ -55,7 +56,7 @@ export default function SaveButton({ capsuleId }: SaveButtonProps) {
                 border: 'none',
                 padding: 0,
                 fontSize: '0.75rem',
-                color: saved ? 'var(--text-main)' : 'var(--text-tertiary)',
+                color: textColor ?? (saved ? 'var(--text-main)' : 'var(--text-tertiary)'),
                 cursor: loading ? 'not-allowed' : 'pointer',
                 opacity: loading ? 0.5 : 1,
                 transition: 'color 0.15s, opacity 0.15s',

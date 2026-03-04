@@ -168,6 +168,22 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
                 </div>
             )}
 
+            {/* ── READ MODE save button (fixed, top-left) ── */}
+            {isReadMode && (
+                <div
+                    style={{
+                        position: 'fixed',
+                        top: '20px',
+                        left: '20px',
+                        zIndex: 1000,
+                        color: textColor,
+                    }}
+                >
+                    <SaveButton capsuleId={id} textColor={textColor} />
+                </div>
+            )}
+
+
             <div
                 className={`capsule-outer-wrap${isReadMode ? ' read-mode-root' : ''}`}
                 style={{ maxWidth: '1152px', margin: '0 auto', padding: '3rem 1.5rem 4rem' }}
