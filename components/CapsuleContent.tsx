@@ -55,6 +55,18 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
         };
     }, [audioUrl]);
 
+    // Auto-play when the capsule opens (if audio is present)
+    useEffect(() => {
+        if (!audioUrl) return;
+        const el = audioRef.current;
+        if (!el) return;
+        el.play()
+            .then(() => setIsPlaying(true))
+            .catch(() => {
+                // Browser blocked autoplay (no prior user gesture); leave paused
+            });
+    }, [audioUrl]);
+
     const toggleAudio = () => {
         const el = audioRef.current;
         if (!el) return;
