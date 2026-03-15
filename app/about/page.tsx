@@ -107,6 +107,56 @@ export default function AboutPage() {
                         </div>
                     </section>
 
+                    {/* Design & Development Section */}
+                    <section>
+                        <h2 className="text-[#ff003c] font-['Space_Grotesk'] text-xs tracking-[0.3em] uppercase mb-6 flex items-center gap-3">
+                            <span className="w-8 h-px bg-[#ff003c]"></span>
+                            Design &amp; Development
+                        </h2>
+                        <div className="space-y-6">
+                            <div className="border-l-2 border-[#00f0ff]/30 pl-6 space-y-2">
+                                <p className="text-gray-400 leading-relaxed font-mono text-[13px] md:text-sm">
+                                    Vestibule is a collaborative project created by Uthaya Harshitha and Vishwa. Drawing on a background in psychology and an interest in human–computer interaction, the entire concept was conceived and led by Uthaya, who developed the original idea and directed the overall vision of the platform. This included establishing the conceptual and psychological foundation of the project, shaping key interaction choices, the user experience philosophy. She led all major creative, experiential, and design decisions, as well as designing the interface and structure of the website.
+                                </p>
+                            </div>
+                            <div className="border-l-2 border-[#00f0ff]/30 pl-6 space-y-2">
+                                <p className="text-gray-400 leading-relaxed font-mono text-[13px] md:text-sm">
+                                    The full technical development and implementation of the platform were carried out by Vishwa, who built and coded the website from the ground up.
+                                </p>
+                            </div>
+                            <div className="border-l-2 border-[#00f0ff]/30 pl-6 space-y-2">
+                                <p className="text-gray-400 leading-relaxed font-mono text-[13px] md:text-sm">
+                                    Vestibule was created as a portfolio project to bring together psychological insight, interaction design, and web development, demonstrating how thoughtfully designed digital environments can shape emotional engagement online.
+                                </p>
+                            </div>
+                            <div className="border-l-2 border-[#00f0ff]/30 pl-6 space-y-3">
+                                <p className="text-gray-400 leading-relaxed font-mono text-[13px] md:text-sm">
+                                    Links to our work can be found below:
+                                </p>
+                                <ul className="space-y-2 font-mono text-[13px] md:text-sm">
+                                    <li>
+                                        <span className="text-gray-500 uppercase tracking-widest text-[11px]">Design Portfolio — </span>
+                                        <a href="" className="text-[#00f0ff]/70 hover:text-[#00f0ff] transition-colors underline underline-offset-4 decoration-[#00f0ff]/30">
+                                            Uthaya Harshitha
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <span className="text-gray-500 uppercase tracking-widest text-[11px]">LinkedIn — </span>
+                                        <a href="https://linkedin.com/in/uthayaharshitha" target="_blank" rel="noopener noreferrer" className="text-[#00f0ff]/70 hover:text-[#00f0ff] transition-colors underline underline-offset-4 decoration-[#00f0ff]/30">
+                                            Uthaya Harshitha
+                                        </a>
+                                    </li>
+                                    <li>
+                                        <span className="text-gray-500 uppercase tracking-widest text-[11px]">LinkedIn — </span>
+                                        <a href="https://linkedin.com/in/vishdoubleua" target="_blank" rel="noopener noreferrer" className="text-[#00f0ff]/70 hover:text-[#00f0ff] transition-colors underline underline-offset-4 decoration-[#00f0ff]/30">
+                                            Vishwa
+                                        </a>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </section>
+
                     {/* Closing */}
                     <section className="pt-4 border-t border-white/5">
                         <p className="text-gray-500 font-mono text-[11px] tracking-[0.25em] uppercase">
