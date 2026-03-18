@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { signInWithEmail } from '@/lib/auth';
 import { supabase } from '@/lib/supabase';
 import Link from 'next/link';
@@ -12,6 +12,27 @@ export default function LoginPage() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const router = useRouter();
+    const [currentDate, setCurrentDate] = useState('01-03-2026');
+    const [currentTime, setCurrentTime] = useState('05:34:00');
+
+    useEffect(() => {
+        const updateDateTime = () => {
+            const now = new Date();
+            const day = String(now.getDate()).padStart(2, '0');
+            const month = String(now.getMonth() + 1).padStart(2, '0');
+            const year = now.getFullYear();
+            setCurrentDate(`${month}-${day}-${year}`);
+            
+            const hours = String(now.getHours()).padStart(2, '0');
+            const minutes = String(now.getMinutes()).padStart(2, '0');
+            const seconds = String(now.getSeconds()).padStart(2, '0');
+            setCurrentTime(`${hours}:${minutes}:${seconds}`);
+        };
+
+        updateDateTime();
+        const timer = setInterval(updateDateTime, 1000);
+        return () => clearInterval(timer);
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -57,8 +78,8 @@ export default function LoginPage() {
 
             {/* Timestamp */}
             <div className="fixed bottom-8 left-12 z-50 text-2xl tracking-tighter text-white/80 flex flex-col items-start opacity-90 font-mono">
-                <span className="vhs-chromatic-aberration">01-03-2026</span>
-                <span className="vhs-chromatic-aberration">05:34:00</span>
+                <span className="vhs-chromatic-aberration" suppressHydrationWarning>{currentDate}</span>
+                <span className="vhs-chromatic-aberration" suppressHydrationWarning>{currentTime}</span>
             </div>
 
             {/* Form Content */}

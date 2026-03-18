@@ -71,6 +71,7 @@ export async function getCapsuleById(id: string) {
       capsule_media (*),
       capsule_audio (*),
       capsule_notes (*),
+      capsule_hashtags (*),
       users (
         username,
         profile_image_url

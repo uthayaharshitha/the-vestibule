@@ -7,24 +7,40 @@ export interface Tag {
 }
 
 export async function searchCapsulesByTag(tag: string) {
-    // partial match on tag name
+    const trimmed = tag.trim().toLowerCase().replace(/^#/, '');
+    if (!trimmed) return { capsules: [], error: null };
+
+    // Find IDs matching hashtag
+    const { data: hashtagMatches } = await supabase
+        .from('capsule_hashtags')
+        .select('capsule_id')
+        .ilike('hashtag', `%${trimmed}%`)
+        .limit(20);
+
+    const idSet = new Set<string>();
+    (hashtagMatches || []).forEach((r: any) => idSet.add(r.capsule_id));
+
+    if (idSet.size === 0) return { capsules: [], error: null };
+
+    const FULL_SELECT = `
+        *,
+        capsule_hashtags (
+            hashtag,
+            order_index
+        ),
+        capsule_notes (*)
+    `;
+
     const { data, error } = await supabase
         .from('capsules')
-        .select(`
-      *,
-      capsule_tags!inner (
-        tags!inner (
-          name
-        )
-      )
-    `)
+        .select(FULL_SELECT)
+        .in('id', Array.from(idSet))
         .eq('status', 'active')
         .eq('visibility', 'public')
-        .ilike('capsule_tags.tags.name', `%${tag}%`)
         .order('created_at', { ascending: false });
 
     if (error) {
-        console.error('Error searching capsules:', error);
+        console.error('Error searching capsules by tag:', error);
         return { capsules: [], error };
     }
 
@@ -51,16 +67,11 @@ export async function getCapsulesBySearchTerm(term: string) {
 
     const FULL_SELECT = `
         *,
-        capsule_tags (
-            tags (
-                id,
-                name
-            )
-        ),
         capsule_hashtags (
             hashtag,
             order_index
-        )
+        ),
+        capsule_notes (*)
     `;
 
     // Pass 1: IDs matching title or description
@@ -79,7 +90,7 @@ export async function getCapsulesBySearchTerm(term: string) {
         .ilike('hashtag', `%${trimmed}%`)
         .limit(20);
 
-    // Merge IDs, deduplicate
+    // Merged IDs, deduplicated
     const idSet = new Set<string>();
     (titleMatches || []).forEach((r: any) => idSet.add(r.id));
     (hashtagMatches || []).forEach((r: any) => idSet.add(r.capsule_id));
