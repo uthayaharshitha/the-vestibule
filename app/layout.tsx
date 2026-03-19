@@ -8,6 +8,8 @@ import { ThemeProvider } from "@/contexts/ThemeContext";
 import { ToastProvider } from "@/contexts/ToastContext";
 import { ReadModeProvider } from "@/contexts/ReadModeContext";
 import GrainOverlay from "@/components/GrainOverlay";
+import { CapsuleUploadProvider } from "@/contexts/CapsuleUploadContext";
+import PostingBanner from "@/components/PostingBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -49,11 +51,14 @@ export default function RootLayout({
         <ReadModeProvider>
           <ThemeProvider>
             <ToastProvider>
-              <AppHeader />
-              <LayoutWrapper>
-                {children}
-              </LayoutWrapper>
-              <FloatingCreateButton />
+              <CapsuleUploadProvider>
+                <AppHeader />
+                <LayoutWrapper>
+                  {children}
+                </LayoutWrapper>
+                <FloatingCreateButton />
+                <PostingBanner />
+              </CapsuleUploadProvider>
             </ToastProvider>
           </ThemeProvider>
         </ReadModeProvider>

@@ -408,3 +408,126 @@ export async function updateCapsule(params: UpdateCapsuleParams) {
     }
 }
 
+export interface CreateCapsuleRecordParams {
+    title: string;
+    description?: string;
+    themeColor?: string;
+    coverImageUrl?: string;
+    includeCoverInMedia?: boolean;
+    hashtags?: string[];
+    fragranceNotes: string[];
+    mediaItems: { url: string; type: 'image' | 'video' }[];
+    audioUrl?: string;
+}
+
+/**
+ * Creates a complete capsule record (DB only) using already-uploaded URLs.
+ * Called from the background posting flow after all files are uploaded.
+ */
+export async function createCapsuleRecord(params: CreateCapsuleRecordParams) {
+    const { title, description, themeColor, coverImageUrl, includeCoverInMedia, hashtags, fragranceNotes, mediaItems, audioUrl } = params;
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) return { capsule: null, error: authError || new Error('Not authenticated') };
+
+    try {
+        const { data: capsule, error: capsuleError } = await supabase
+            .from('capsules')
+            .insert({
+                creator_id: user.id,
+                title,
+                description,
+                theme_color: themeColor || '#F5F5F5',
+                cover_image_url: coverImageUrl ?? null,
+                status: 'active',
+                visibility: 'public',
+            })
+            .select()
+            .single();
+
+        if (capsuleError || !capsule) return { capsule: null, error: capsuleError };
+
+        const capsuleId = capsule.id;
+
+        const allMediaItems = [...mediaItems];
+        if (coverImageUrl && includeCoverInMedia) {
+            allMediaItems.push({ url: coverImageUrl, type: 'image' });
+        }
+
+        if (allMediaItems.length > 0) {
+            await supabase.from('capsule_media').insert(
+                allMediaItems.map((m, i) => ({
+                    capsule_id: capsuleId,
+                    media_type: m.type,
+                    file_url: m.url,
+                    order_index: i,
+                }))
+            );
+        }
+
+        if (hashtags && hashtags.length > 0) {
+            await supabase.from('capsule_hashtags').insert(
+                hashtags.slice(0, 4).map((tag, i) => ({
+                    capsule_id: capsuleId,
+                    hashtag: tag.toLowerCase().replace(/^#/, ''),
+                    order_index: i + 1,
+                }))
+            );
+        }
+
+        if (audioUrl) {
+            await supabase.from('capsule_audio').insert({ capsule_id: capsuleId, file_url: audioUrl });
+        }
+
+        if (fragranceNotes.length > 0) {
+            await supabase.from('capsule_notes').insert(
+                fragranceNotes.map((note, i) => ({ capsule_id: capsuleId, note_text: note, order_index: i }))
+            );
+        }
+
+        return { capsule, error: null };
+    } catch (err: any) {
+        console.error('createCapsuleRecord error:', err);
+        return { capsule: null, error: err };
+    }
+}
+
+/**
+ * Attaches pre-uploaded media/audio to an existing capsule (edit background flow).
+ */
+export async function attachMediaToCapsule(
+    capsuleId: string,
+    mediaItems: { url: string; type: 'image' | 'video' }[],
+    audioUrl?: string,
+    audioIdsToRemove?: string[],
+    mediaIdsToRemove?: string[]
+) {
+    try {
+        if (mediaIdsToRemove && mediaIdsToRemove.length > 0)
+            await supabase.from('capsule_media').delete().in('id', mediaIdsToRemove);
+
+        if (audioIdsToRemove && audioIdsToRemove.length > 0)
+            await supabase.from('capsule_audio').delete().in('id', audioIdsToRemove);
+
+        if (mediaItems.length > 0) {
+            const { data: existing } = await supabase
+                .from('capsule_media').select('order_index')
+                .eq('capsule_id', capsuleId)
+                .order('order_index', { ascending: false }).limit(1);
+            const startIndex = existing && existing.length > 0 ? existing[0].order_index + 1 : 0;
+
+            await supabase.from('capsule_media').insert(
+                mediaItems.map((m, i) => ({
+                    capsule_id: capsuleId, media_type: m.type, file_url: m.url, order_index: startIndex + i,
+                }))
+            );
+        }
+
+        if (audioUrl)
+            await supabase.from('capsule_audio').insert({ capsule_id: capsuleId, file_url: audioUrl });
+
+        return { error: null };
+    } catch (err: any) {
+        return { error: err };
+    }
+}
