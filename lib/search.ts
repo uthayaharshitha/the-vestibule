@@ -6,45 +6,9 @@ export interface Tag {
     name: string;
 }
 
-export async function searchCapsulesByTag(tag: string) {
-    const trimmed = tag.trim().toLowerCase().replace(/^#/, '');
-    if (!trimmed) return { capsules: [], error: null };
-
-    // Find IDs matching hashtag
-    const { data: hashtagMatches } = await supabase
-        .from('capsule_hashtags')
-        .select('capsule_id')
-        .ilike('hashtag', `%${trimmed}%`)
-        .limit(20);
-
-    const idSet = new Set<string>();
-    (hashtagMatches || []).forEach((r: any) => idSet.add(r.capsule_id));
-
-    if (idSet.size === 0) return { capsules: [], error: null };
-
-    const FULL_SELECT = `
-        *,
-        capsule_hashtags (
-            hashtag,
-            order_index
-        ),
-        capsule_notes (*)
-    `;
-
-    const { data, error } = await supabase
-        .from('capsules')
-        .select(FULL_SELECT)
-        .in('id', Array.from(idSet))
-        .eq('status', 'active')
-        .eq('visibility', 'public')
-        .order('created_at', { ascending: false });
-
-    if (error) {
-        console.error('Error searching capsules by tag:', error);
-        return { capsules: [], error };
-    }
-
-    return { capsules: data as Capsule[], error: null };
+export async function searchCapsulesByTag(_tag: string) {
+    // Hashtag feature removed — always returns empty
+    return { capsules: [], error: null };
 }
 
 export async function getAllTags() {
@@ -67,10 +31,6 @@ export async function getCapsulesBySearchTerm(term: string) {
 
     const FULL_SELECT = `
         *,
-        capsule_hashtags (
-            hashtag,
-            order_index
-        ),
         capsule_notes (*)
     `;
 
@@ -83,17 +43,9 @@ export async function getCapsulesBySearchTerm(term: string) {
         .or(`title.ilike.%${trimmed}%,description.ilike.%${trimmed}%`)
         .limit(30);
 
-    // Pass 2: IDs matching any hashtag
-    const { data: hashtagMatches } = await supabase
-        .from('capsule_hashtags')
-        .select('capsule_id')
-        .ilike('hashtag', `%${trimmed}%`)
-        .limit(20);
-
     // Merged IDs, deduplicated
     const idSet = new Set<string>();
     (titleMatches || []).forEach((r: any) => idSet.add(r.id));
-    (hashtagMatches || []).forEach((r: any) => idSet.add(r.capsule_id));
 
     if (idSet.size === 0) return { capsules: [], error: null };
 

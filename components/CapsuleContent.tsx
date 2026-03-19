@@ -101,10 +101,7 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
         setIsDrifting(false);
     };
 
-    // Derive hashtags
-    const hashtags: string[] = capsule.capsule_hashtags
-        ? capsule.capsule_hashtags.map((h: any) => h.tag || h.hashtag || h).filter(Boolean)
-        : [];
+
 
     // Derive sensory notes
     const sensoryNotes = capsule.capsule_notes || [];
@@ -323,36 +320,6 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
                     {capsule.capsule_media && capsule.capsule_media.length > 0 && (
                         <div style={{ marginBottom: '1.5rem' }}>
                             <MediaGallery media={capsule.capsule_media} hideTitle={true} isNewDesign={true} accentColor={accentColor} accentGlow={accentGlow} />
-                        </div>
-                    )}
-
-                    {/* ── HASHTAGS ── */}
-                    {hashtags.length > 0 && (
-                        <div
-                            style={{
-                                display: 'flex',
-                                flexWrap: 'wrap',
-                                gap: '0.6rem',
-                                justifyContent: 'center',
-                                marginBottom: '3rem',
-                            }}
-                        >
-                            {hashtags.map((tag: string, i: number) => (
-                                <span
-                                    key={i}
-                                    className="font-mono"
-                                    style={{
-                                        fontSize: '0.65rem',
-                                        color: accentColor,
-                                        border: `1px solid ${accentBorder}`,
-                                        padding: '0.2rem 0.75rem',
-                                        borderRadius: '9999px',
-                                        background: isLightText ? 'rgba(255,255,255,0.05)' : 'rgba(0,0,0,0.03)',
-                                    }}
-                                >
-                                    {tag.startsWith('#') ? tag : `#${tag}`}
-                                </span>
-                            ))}
                         </div>
                     )}
 

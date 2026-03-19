@@ -63,7 +63,6 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
     const [themeColor, setThemeColor] = useState('#F5F5F5');
     const [themeColorHex, setThemeColorHex] = useState('#F5F5F5');
     const [existingCoverUrl, setExistingCoverUrl] = useState<string | null>(null);
-    const [hashtags, setHashtags] = useState<string[]>([]);
     const [fragranceNotes, setFragranceNotes] = useState<string[]>([]);
     const [existingMedia, setExistingMedia] = useState<any[]>([]);
     const [existingAudio, setExistingAudio] = useState<any[]>([]);
@@ -88,7 +87,6 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
             if (capsuleError) { setError('Failed to load capsule.'); setLoading(false); return; }
 
             const { data: notes } = await supabase.from('capsule_notes').select('note_text').eq('capsule_id', capsuleId).order('order_index');
-            const { data: hashtagsData } = await supabase.from('capsule_hashtags').select('hashtag').eq('capsule_id', capsuleId).order('order_index');
             const { data: media } = await supabase.from('capsule_media').select('*').eq('capsule_id', capsuleId).order('order_index');
             const { data: audio } = await supabase.from('capsule_audio').select('*').eq('capsule_id', capsuleId);
 
@@ -100,7 +98,6 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                 setExistingCoverUrl(capsule.cover_image_url);
             }
             if (notes?.length) setFragranceNotes(notes.map((n: any) => n.note_text));
-            if (hashtagsData?.length) setHashtags(hashtagsData.map((h: any) => h.hashtag));
             if (media) setExistingMedia(media);
             if (audio) setExistingAudio(audio);
             setLoading(false);
@@ -183,7 +180,7 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
 
         // Background: update metadata + attach new media
         Promise.all([
-            updateCapsule({ capsuleId, title, description, themeColor, coverImage: undefined, hashtags, fragranceNotes, mediaIdsToRemove: mediaToRemove.length > 0 ? mediaToRemove : undefined, audioIdsToRemove: audioToRemove.length > 0 ? audioToRemove : undefined }),
+            updateCapsule({ capsuleId, title, description, themeColor, coverImage: undefined, fragranceNotes, mediaIdsToRemove: mediaToRemove.length > 0 ? mediaToRemove : undefined, audioIdsToRemove: audioToRemove.length > 0 ? audioToRemove : undefined }),
             attachMediaToCapsule(capsuleId, newMedia, audioUrl, audioToRemove.length > 0 ? audioToRemove : undefined, undefined)
         ]).then(() => {
             finishPosting();
@@ -245,7 +242,6 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                     )}
                 </div>
 
-                <TagInput label="Hashtags" tags={hashtags} onChange={setHashtags} max={4} placeholder="Type and press Enter (no # needed)" prefix="#" />
                 <TagInput label="Sensory Notes" tags={fragranceNotes} onChange={setFragranceNotes} max={20} placeholder="Type and press Enter (e.g. old books, rain, ozone)" />
 
                 {/* Existing Media */}

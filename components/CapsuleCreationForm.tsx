@@ -121,7 +121,6 @@ export default function CapsuleCreationForm() {
     const [description, setDescription] = useState('');
     const [themeColor, setThemeColor] = useState('#F5F5F5');
     const [themeColorHex, setThemeColorHex] = useState('#F5F5F5');
-    const [hashtags, setHashtags] = useState<string[]>([]);
     const [fragranceNotes, setFragranceNotes] = useState<string[]>([]);
     const [includeCoverInMedia, setIncludeCoverInMedia] = useState(false);
     const [error, setError] = useState<string | null>(null);
@@ -256,7 +255,7 @@ export default function CapsuleCreationForm() {
         createCapsuleRecord({
             title, description, themeColor,
             coverImageUrl, includeCoverInMedia,
-            hashtags, fragranceNotes,
+            fragranceNotes,
             mediaItems: uploadedMedia,
             audioUrl,
         }).then(({ error: postError }) => {
@@ -344,7 +343,6 @@ export default function CapsuleCreationForm() {
                 </div>
 
                 {/* Tags */}
-                <TagInput label="Hashtags" tags={hashtags} onChange={setHashtags} max={4} placeholder="Type and press Enter (no # needed)" prefix="#" />
                 <TagInput label="Sensory Notes" tags={fragranceNotes} onChange={setFragranceNotes} max={20} placeholder="Type and press Enter (e.g. old books, rain, ozone)" />
 
                 {/* Images & Videos */}

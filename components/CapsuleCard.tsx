@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { Capsule } from '@/types/database';
 import { useState, useEffect, useRef } from 'react';
 
@@ -32,12 +31,9 @@ function getBrightThemeColor(hexColor: string): string {
 
 export default function CapsuleCard({ capsule, revealDelay = 0 }: CapsuleCardProps) {
     const themeColor = capsule.theme_color || '#F5F5F5';
-    const textColor = getContrastColor(themeColor);
-    const isLightText = textColor === '#FFFFFF';
     const [imageLoaded, setImageLoaded] = useState(false);
     const [isVisible, setIsVisible] = useState(false);
     const cardRef = useRef<HTMLDivElement>(null);
-    const router = useRouter();
 
     // IntersectionObserver — reveal once on first entry, never re-trigger
     useEffect(() => {
@@ -118,43 +114,6 @@ export default function CapsuleCard({ capsule, revealDelay = 0 }: CapsuleCardPro
                         </div>
                     )}
 
-                    {/* Bottom Bar - Hashtags */}
-                    <div
-                        className="p-3 relative z-10 flex-grow flex flex-col justify-end"
-                        style={{ backgroundColor: `${themeColor}30` }}
-                    >
-                        {capsule.capsule_hashtags && capsule.capsule_hashtags.length > 0 ? (
-                            <div className="flex flex-wrap gap-2" onClick={(e) => e.stopPropagation()}>
-                                {capsule.capsule_hashtags
-                                    .sort((a: any, b: any) => a.order_index - b.order_index)
-                                    .map((item: any, index: number) => (
-                                        <button
-                                            key={index}
-                                            onClick={(e) => {
-                                                e.preventDefault();
-                                                e.stopPropagation();
-                                                router.push(`/feed?tag=${encodeURIComponent(item.hashtag)}`);
-                                            }}
-                                            className="text-[8px] px-2 py-1.5 font-mono uppercase transition-colors hover:bg-white/10 active:bg-white/10 min-h-[32px] flex items-center"
-                                            style={{
-                                                backgroundColor: `${themeColor}15`,
-                                                border: `1px solid ${themeColor}50`,
-                                                color: getBrightThemeColor(themeColor),
-                                                letterSpacing: '0.05em',
-                                                textShadow: '0 1px 4px rgba(0,0,0,0.8)',
-                                                touchAction: 'manipulation',
-                                            }}
-                                        >
-                                            {item.hashtag}
-                                        </button>
-                                    ))}
-                            </div>
-                        ) : (
-                            <div className="h-4 flex items-center">
-                                <span className="text-[7px] font-mono text-white/20 uppercase tracking-widest">[NO_TAGS_FOUND]</span>
-                            </div>
-                        )}
-                    </div>
                 </div>
             </Link>
         </div>

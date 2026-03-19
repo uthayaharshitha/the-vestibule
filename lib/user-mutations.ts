@@ -145,8 +145,7 @@ export async function getSavedCapsules() {
                 cover_image_url,
                 status,
                 visibility,
-                created_at,
-                capsule_hashtags (hashtag, order_index)
+                created_at
             )
         `)
         .eq('user_id', userId)

@@ -25,14 +25,13 @@ export interface CreateCapsuleParams {
     themeColor?: string;
     coverImage?: File;
     includeCoverInMedia?: boolean;
-    hashtags?: string[];
     fragranceNotes: string[];
     mediaFiles: File[];
     audioFile?: File;
 }
 
 export async function createCapsule(params: CreateCapsuleParams) {
-    const { title, description, shortDescription, themeColor, coverImage, includeCoverInMedia, hashtags, fragranceNotes, mediaFiles, audioFile } = params;
+    const { title, description, shortDescription, themeColor, coverImage, includeCoverInMedia, fragranceNotes, mediaFiles, audioFile } = params;
 
     // 1. Get User
     const { data: { user }, error: authError } = await supabase.auth.getUser();
@@ -119,22 +118,7 @@ export async function createCapsule(params: CreateCapsuleParams) {
 
         await Promise.all(mediaPromises);
 
-        // 5. Insert hashtags if provided
-        if (hashtags && hashtags.length > 0) {
-            const hashtagsData = hashtags.slice(0, 4).map((tag, index) => ({
-                capsule_id: capsuleId,
-                hashtag: tag.toLowerCase().replace(/^#/, ''),
-                order_index: index + 1
-            }));
 
-            const { error: hashtagsError } = await supabase
-                .from('capsule_hashtags')
-                .insert(hashtagsData);
-
-            if (hashtagsError) throw hashtagsError;
-        }
-
-        // 6. Add cover image to media if checkbox was checked
         if (coverImageUrl && includeCoverInMedia) {
             await supabase
                 .from('capsule_media')
@@ -220,7 +204,6 @@ export interface UpdateCapsuleParams {
     shortDescription?: string;
     themeColor?: string;
     coverImage?: File;
-    hashtags?: string[];
     fragranceNotes: string[];
     mediaIdsToRemove?: string[];
     newMediaFiles?: File[];
@@ -229,7 +212,7 @@ export interface UpdateCapsuleParams {
 }
 
 export async function updateCapsule(params: UpdateCapsuleParams) {
-    const { capsuleId, title, description, shortDescription, themeColor, coverImage, hashtags, fragranceNotes, mediaIdsToRemove, newMediaFiles, audioIdsToRemove, audioFile } = params;
+    const { capsuleId, title, description, shortDescription, themeColor, coverImage, fragranceNotes, mediaIdsToRemove, newMediaFiles, audioIdsToRemove, audioFile } = params;
 
     const { data: { user } } = await supabase.auth.getUser();
     if (!user) return { error: new Error('Not authenticated') };
@@ -268,28 +251,6 @@ export async function updateCapsule(params: UpdateCapsuleParams) {
             .eq('creator_id', user.id);
 
         if (capsuleError) return { error: capsuleError };
-
-        // 3. Update Hashtags (Delete all, then re-insert)
-        const { error: deleteHashtagsError } = await supabase
-            .from('capsule_hashtags')
-            .delete()
-            .eq('capsule_id', capsuleId);
-
-        if (deleteHashtagsError) throw deleteHashtagsError;
-
-        if (hashtags && hashtags.length > 0) {
-            const hashtagsData = hashtags.slice(0, 4).map((tag, index) => ({
-                capsule_id: capsuleId,
-                hashtag: tag.toLowerCase().replace(/^#/, ''),
-                order_index: index + 1
-            }));
-
-            const { error: hashtagsError } = await supabase
-                .from('capsule_hashtags')
-                .insert(hashtagsData);
-
-            if (hashtagsError) throw hashtagsError;
-        }
 
         // 4. Remove media if specified
         if (mediaIdsToRemove && mediaIdsToRemove.length > 0) {
@@ -414,7 +375,6 @@ export interface CreateCapsuleRecordParams {
     themeColor?: string;
     coverImageUrl?: string;
     includeCoverInMedia?: boolean;
-    hashtags?: string[];
     fragranceNotes: string[];
     mediaItems: { url: string; type: 'image' | 'video' }[];
     audioUrl?: string;
@@ -425,7 +385,7 @@ export interface CreateCapsuleRecordParams {
  * Called from the background posting flow after all files are uploaded.
  */
 export async function createCapsuleRecord(params: CreateCapsuleRecordParams) {
-    const { title, description, themeColor, coverImageUrl, includeCoverInMedia, hashtags, fragranceNotes, mediaItems, audioUrl } = params;
+    const { title, description, themeColor, coverImageUrl, includeCoverInMedia, fragranceNotes, mediaItems, audioUrl } = params;
 
     const { data: { user }, error: authError } = await supabase.auth.getUser();
     if (authError || !user) return { capsule: null, error: authError || new Error('Not authenticated') };
@@ -465,15 +425,7 @@ export async function createCapsuleRecord(params: CreateCapsuleRecordParams) {
             );
         }
 
-        if (hashtags && hashtags.length > 0) {
-            await supabase.from('capsule_hashtags').insert(
-                hashtags.slice(0, 4).map((tag, i) => ({
-                    capsule_id: capsuleId,
-                    hashtag: tag.toLowerCase().replace(/^#/, ''),
-                    order_index: i + 1,
-                }))
-            );
-        }
+
 
         if (audioUrl) {
             await supabase.from('capsule_audio').insert({ capsule_id: capsuleId, file_url: audioUrl });

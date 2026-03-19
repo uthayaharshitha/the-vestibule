@@ -1,31 +1,7 @@
 import { supabase } from './supabase';
 import { Capsule } from '@/types/database';
 
-export async function getCapsules(limit: number = 10, cursor?: string, tag?: string) {
-    if (tag) {
-        // Filter by hashtag — join through capsule_hashtags
-        const { data, error } = await supabase
-            .from('capsule_hashtags')
-            .select(`
-                capsules (
-                    *,
-                    capsule_hashtags (hashtag, order_index)
-                )
-            `)
-            .eq('hashtag', tag.toLowerCase().replace(/^#/, ''))
-            .limit(limit);
-
-        if (error) {
-            console.error('Error fetching capsules by tag:', error);
-            return { capsules: [], error };
-        }
-
-        const capsules = (data || [])
-            .map((row: any) => row.capsules)
-            .filter((c: any) => c && c.status === 'active' && c.visibility === 'public');
-
-        return { capsules: capsules as Capsule[], error: null };
-    }
+export async function getCapsules(limit: number = 10, cursor?: string) {
 
     let query = supabase
         .from('capsules')
@@ -36,10 +12,6 @@ export async function getCapsules(limit: number = 10, cursor?: string, tag?: str
                     id,
                     name
                 )
-            ),
-            capsule_hashtags (
-                hashtag,
-                order_index
             )
         `)
         .eq('status', 'active')
@@ -71,7 +43,6 @@ export async function getCapsuleById(id: string) {
       capsule_media (*),
       capsule_audio (*),
       capsule_notes (*),
-      capsule_hashtags (*),
       users (
         username,
         profile_image_url

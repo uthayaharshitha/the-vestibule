@@ -25,7 +25,6 @@ export interface Capsule {
     capsule_audio?: CapsuleAudio[];
     capsule_notes?: CapsuleNote[];
     capsule_tags?: { tags: Tag }[];
-    capsule_hashtags?: CapsuleHashtag[];
 }
 
 export interface CapsuleMedia {

@@ -44,7 +44,6 @@ export async function getCapsulesByUserId(userId: string) {
         .from('capsules')
         .select(`
             *,
-            capsule_hashtags (hashtag, order_index),
             capsule_media (file_url, media_type, order_index)
         `)
         .eq('creator_id', userId)

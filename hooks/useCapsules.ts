@@ -14,7 +14,7 @@ function shuffle<T>(arr: T[]): T[] {
     return a;
 }
 
-export function useCapsules(tag?: string) {
+export function useCapsules() {
     const [capsules, setCapsules] = useState<Capsule[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -23,7 +23,7 @@ export function useCapsules(tag?: string) {
         const load = async () => {
             setLoading(true);
             setCapsules([]);
-            const { capsules: data, error } = await getCapsules(500, undefined, tag);
+            const { capsules: data, error } = await getCapsules(500);
 
             if (error) {
                 setError('Failed to load capsules');
@@ -31,12 +31,12 @@ export function useCapsules(tag?: string) {
                 return;
             }
 
-            // When filtering by tag, preserve order; otherwise shuffle for randomness
-            setCapsules(tag ? data : shuffle(data));
+            // Shuffle for randomness
+            setCapsules(shuffle(data));
             setLoading(false);
         };
         load();
-    }, [tag]);
+    }, []);
 
     // hasMore / loadMore kept for CapsuleFeed compatibility
     const hasMore = false;
