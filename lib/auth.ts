@@ -17,27 +17,11 @@ export async function getCurrentUser() {
     return session?.user || null;
 }
 
-// ── Sign up with email + username ─────────────────────────────────────────
-export async function signUpWithEmail(email: string, password: string, username?: string) {
-    // 1. Check username availability before signing up (no point creating auth if username taken)
-    if (username) {
-        const clean = username.toLowerCase().trim();
-        const { data: available, error: rpcErr } = await supabase.rpc('is_username_available', { uname: clean });
-        if (rpcErr) {
-            // RPC might not exist yet (migration not run) — skip check, handle DB error later
-            console.warn('is_username_available RPC not available:', rpcErr.message);
-        } else if (!available) {
-            return { data: null, error: { message: 'Username is already taken. Please choose another.' } };
-        }
-    }
-
-    // 2. Create auth user — store username in metadata so /auth/callback can save it after confirmation
+export async function signUpWithEmail(email: string, password: string) {
     const { data, error } = await supabase.auth.signUp({
         email,
         password,
         options: {
-            data: { username: username ? username.toLowerCase().trim() : null },
-            // emailRedirectTo tells Supabase where to send the user after confirming
             emailRedirectTo: `${window.location.origin}/auth/callback`,
         },
     });
