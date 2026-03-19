@@ -135,13 +135,14 @@ export default function CapsuleCard({ capsule, revealDelay = 0 }: CapsuleCardPro
                                                 e.stopPropagation();
                                                 router.push(`/feed?tag=${encodeURIComponent(item.hashtag)}`);
                                             }}
-                                            className="text-[8px] px-1.5 py-0.5 font-mono uppercase transition-colors hover:bg-white/10"
+                                            className="text-[8px] px-2 py-1.5 font-mono uppercase transition-colors hover:bg-white/10 active:bg-white/10 min-h-[32px] flex items-center"
                                             style={{
                                                 backgroundColor: `${themeColor}15`,
                                                 border: `1px solid ${themeColor}50`,
                                                 color: getBrightThemeColor(themeColor),
                                                 letterSpacing: '0.05em',
                                                 textShadow: '0 1px 4px rgba(0,0,0,0.8)',
+                                                touchAction: 'manipulation',
                                             }}
                                         >
                                             {item.hashtag}

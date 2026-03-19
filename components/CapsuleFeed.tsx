@@ -45,8 +45,8 @@ export default function CapsuleFeed() {
     }
 
     return (
-        <div className="max-w-7xl mx-auto px-6 py-10 relative z-10 bg-grain-fix">
-            <div className="mb-12 border-l-4 border-[#991b1b] pl-8">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 py-10 relative z-10 bg-grain-fix">
+            <div className="mb-12 border-l-4 border-[#991b1b] pl-4 sm:pl-8">
                 <div className="flex flex-wrap items-center gap-4 mb-4">
                     {tag && (
                         <button
@@ -58,7 +58,7 @@ export default function CapsuleFeed() {
                         </button>
                     )}
                 </div>
-                <h1 className="text-3xl md:text-5xl font-black tracking-tighter text-white uppercase" style={{ textShadow: tag ? '1.5px 0 1px rgba(255, 0, 0, 0.6), -1.5px 0 1px rgba(0, 0, 255, 0.6)' : 'none' }}>
+                <h1 className="text-2xl md:text-5xl font-black tracking-tighter text-white uppercase break-words" style={{ textShadow: tag ? '1.5px 0 1px rgba(255, 0, 0, 0.6), -1.5px 0 1px rgba(0, 0, 255, 0.6)' : 'none' }}>
                     {tag ? `DATA QUERY: "${tag}"` : 'MEMORY REPOSITORY'}
                 </h1>
                 <p className="text-[11px] text-gray-500 font-mono mt-4 uppercase tracking-[0.3em]">

@@ -57,7 +57,7 @@ export default function LoginPage() {
     };
 
     return (
-        <main className="selection:bg-white/20 h-screen w-screen flex flex-col justify-center items-center relative overflow-hidden">
+        <main className="selection:bg-white/20 h-screen w-screen flex flex-col justify-center items-center relative overflow-hidden px-4 sm:px-0">
             {/* VHS OVERLAYS */}
             <div className="vhs-static"></div>
             <div className="vhs-lines"></div>
@@ -65,19 +65,19 @@ export default function LoginPage() {
             <div className="vhs-vignette"></div>
 
             {/* REC Indicator */}
-            <div className="fixed top-8 right-12 z-50 flex items-center space-x-3 text-xl tracking-widest text-red-600 opacity-80 font-mono" style={{ animation: 'vhs-flicker 0.2s infinite alternate' }}>
-                <div className="w-3 h-3 bg-red-600 rounded-full animate-pulse"></div>
+            <div className="fixed top-4 sm:top-8 right-4 sm:right-12 z-50 flex items-center space-x-2 sm:space-x-3 text-sm sm:text-xl tracking-widest text-red-600 opacity-80 font-mono" style={{ animation: 'vhs-flicker 0.2s infinite alternate' }}>
+                <div className="w-2 h-2 sm:w-3 sm:h-3 bg-red-600 rounded-full animate-pulse"></div>
                 <span>REC</span>
             </div>
 
             {/* PLAY SP Indicator */}
-            <div className="fixed top-8 left-12 z-50 text-lg text-white/40 flex flex-col items-start leading-none opacity-80 font-mono">
+            <div className="fixed top-4 sm:top-8 left-4 sm:left-12 z-50 text-sm sm:text-lg text-white/40 flex flex-col items-start leading-none opacity-80 font-mono">
                 <span>PLAY</span>
-                <span className="text-xs opacity-50 mt-1">SP</span>
+                <span className="text-[10px] sm:text-xs opacity-50 mt-1">SP</span>
             </div>
 
             {/* Timestamp */}
-            <div className="fixed bottom-8 left-12 z-50 text-2xl tracking-tighter text-white/80 flex flex-col items-start opacity-90 font-mono">
+            <div className="fixed bottom-4 sm:bottom-8 left-4 sm:left-12 z-50 text-base sm:text-2xl tracking-tighter text-white/80 flex flex-col items-start opacity-90 font-mono">
                 <span className="vhs-chromatic-aberration" suppressHydrationWarning>{currentDate}</span>
                 <span className="vhs-chromatic-aberration" suppressHydrationWarning>{currentTime}</span>
             </div>

@@ -9,8 +9,8 @@ export default function PostingBanner() {
         <div
             style={{
                 position: 'fixed',
-                bottom: 24,
-                left: 24,
+                bottom: 'calc(env(safe-area-inset-bottom, 0px) + 90px)',
+                left: '16px',
                 zIndex: 9999,
                 opacity: isPosting ? 1 : 0,
                 pointerEvents: 'none',
@@ -18,8 +18,8 @@ export default function PostingBanner() {
                 display: 'flex',
                 flexDirection: 'column',
                 gap: 6,
-                minWidth: 180,
-                maxWidth: 240,
+                minWidth: 160,
+                maxWidth: 'calc(100vw - 120px)',
             }}
             aria-hidden={!isPosting}
         >
