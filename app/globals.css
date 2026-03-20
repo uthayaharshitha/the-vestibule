@@ -125,7 +125,7 @@ button, a, [role="button"] {
 
 /* ─── Archive Component Consistency ───────────────────── */
 .archive-input {
-  @apply w-full bg-[#111111] border border-white/10 text-white placeholder-white/30 px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors uppercase tracking-widest font-mono;
+  @apply w-full bg-[#111111] border border-white/10 text-white placeholder-white/30 px-4 py-3 text-sm focus:outline-none focus:border-white/30 transition-colors tracking-widest font-mono;
   /* iOS: prevent zoom on focus */
   font-size: max(16px, 0.875rem);
 }

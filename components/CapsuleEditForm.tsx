@@ -36,8 +36,13 @@ function UploadTile({ previewUrl, isVideo, progress, status, onRemove, onRetry, 
     previewUrl: string; isVideo: boolean; progress: number; status: string;
     onRemove: () => void; onRetry?: () => void; fileName?: string;
 }) {
+    const [tapped, setTapped] = useState(false);
     return (
-        <div className="relative aspect-square rounded overflow-hidden group" style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', animation: 'fadeInUp 0.2s ease both' }}>
+        <div 
+            className="relative aspect-square rounded overflow-hidden group" 
+            style={{ background: 'var(--bg-secondary)', border: '1px solid var(--border-color)', animation: 'fadeInUp 0.2s ease both' }}
+            onClick={() => setTapped(!tapped)}
+        >
             {isVideo ? <video src={previewUrl} className="w-full h-full object-cover" muted playsInline /> : <img src={previewUrl} alt={fileName} className="w-full h-full object-cover" />}
             {status === 'uploading' && <div style={{ position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.35)' }} />}
             {status === 'done' && <div style={{ position: 'absolute', top: 4, left: 4, width: 18, height: 18, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 10 }}>✓</div>}
@@ -49,8 +54,8 @@ function UploadTile({ previewUrl, isVideo, progress, status, onRemove, onRetry, 
             )}
             <button
                 type="button"
-                onClick={onRemove}
-                className="absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 opacity-80 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2"
+                onClick={(e) => { e.stopPropagation(); onRemove(); }}
+                className={`absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2 ${tapped ? 'opacity-100' : 'opacity-0'}`}
                 style={{ minWidth: 44, minHeight: 44, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
                 <div style={{
@@ -86,6 +91,7 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
     const [error, setError] = useState<string | null>(null);
     const [initialState, setInitialState] = useState<any>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [tappedMediaId, setTappedMediaId] = useState<string | null>(null);
 
     const { items: newMediaItems, addFiles, removeFile, retryFile, clearAll, uploadingCount } = useMediaUploadQueue('capsule-media');
     const userIdRef = useRef<string | null>(null);
@@ -288,15 +294,15 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                 {/* Existing Media */}
                 {existingMedia.length > 0 && (
                     <div>
-                        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-main)' }}>Existing Media (Hover to remove)</label>
+                        <label className="block text-sm font-medium mb-2" style={{ color: 'var(--text-main)' }}>Existing Media</label>
                         <div className="grid grid-cols-3 sm:grid-cols-4 gap-3">
                             {existingMedia.map((media) => (
-                                <div key={media.id} className="relative aspect-square rounded overflow-hidden group" style={{ border: '1px solid var(--border-color)' }}>
+                                <div key={media.id} onClick={() => setTappedMediaId(tappedMediaId === media.id ? null : media.id)} className="relative aspect-square rounded overflow-hidden group" style={{ border: '1px solid var(--border-color)' }}>
                                     {media.media_type === 'image' ? <img src={media.file_url} alt="Media" className="w-full h-full object-cover" /> : <video src={media.file_url} className="w-full h-full object-cover" muted />}
                                     <button
                                         type="button"
-                                        onClick={() => handleRemoveMedia(media.id)}
-                                        className="absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 opacity-80 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2"
+                                        onClick={(e) => { e.stopPropagation(); handleRemoveMedia(media.id); }}
+                                        className={`absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2 ${tappedMediaId === media.id ? 'opacity-100' : 'opacity-0'}`}
                                         style={{ minWidth: 44, minHeight: 44, background: 'transparent', border: 'none', cursor: 'pointer' }}
                                     >
                                         <div style={{

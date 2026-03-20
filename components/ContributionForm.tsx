@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { createContribution } from '@/lib/contribution-mutations';
 import { getCurrentUser } from '@/lib/auth';
 import Link from 'next/link';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 
 interface ContributionFormProps {
     capsuleId: string;
@@ -24,6 +25,9 @@ export default function ContributionForm({ capsuleId, onSuccess }: ContributionF
             setIsAuthenticated(!!user);
         });
     }, []);
+
+    const isDirty = !isSubmitting && (contentText.trim() !== '' || isAnonymous !== false || boxColor !== '#F5F5F5');
+    useUnsavedChanges(isDirty);
 
     const handleColorPickerChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const color = e.target.value;

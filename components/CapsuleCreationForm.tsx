@@ -46,6 +46,7 @@ function UploadTile({
     onRetry?: () => void;
     fileName?: string;
 }) {
+    const [tapped, setTapped] = useState(false);
     return (
         <div
             className="relative aspect-square rounded overflow-hidden group"
@@ -54,6 +55,7 @@ function UploadTile({
                 border: '1px solid var(--border-color)',
                 animation: 'fadeInUp 0.2s ease both',
             }}
+            onClick={() => setTapped(!tapped)}
         >
             {isVideo ? (
                 <video src={previewUrl} className="w-full h-full object-cover" muted playsInline />
@@ -98,8 +100,8 @@ function UploadTile({
             {/* Remove button */}
             <button
                 type="button"
-                onClick={onRemove}
-                className="absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 opacity-80 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2"
+                onClick={(e) => { e.stopPropagation(); onRemove(); }}
+                className={`absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2 ${tapped ? 'opacity-100' : 'opacity-0'}`}
                 style={{ minWidth: 44, minHeight: 44, background: 'transparent', border: 'none', cursor: 'pointer' }}
             >
                 <div style={{
@@ -128,6 +130,7 @@ export default function CapsuleCreationForm() {
     const [includeCoverInMedia, setIncludeCoverInMedia] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [tappedCover, setTappedCover] = useState(false);
 
     // Cover image single upload state
     const [coverUpload, setCoverUpload] = useState<SingleUpload | null>(null);
@@ -332,13 +335,13 @@ export default function CapsuleCreationForm() {
                     </label>
 
                     {coverUpload && (
-                        <div className="mt-2 relative inline-block" style={{ width: 120, height: 120 }}>
+                        <div onClick={() => setTappedCover(!tappedCover)} className="mt-2 relative inline-block" style={{ width: 120, height: 120 }}>
                             <img src={coverUpload.previewUrl} alt="Cover preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border-color)' }} />
                             <ProgressBar pct={coverUpload.progress} done={coverUpload.status === 'done'} error={coverUpload.status === 'error'} />
                             {coverUpload.status === 'done' && (
                                 <div style={{ position: 'absolute', top: 4, left: 4, width: 18, height: 18, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 10 }}>✓</div>
                             )}
-                            <button type="button" onClick={() => setCoverUpload(null)} style={{ position: 'absolute', top: -8, right: -8, minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                            <button type="button" onClick={(e) => { e.stopPropagation(); setCoverUpload(null); }} className={`absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2 ${tappedCover ? 'opacity-100' : 'opacity-0'}`} style={{ position: 'absolute', top: -8, right: -8, minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer' }}>
                                 <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, pointerEvents: 'none' }}>×</div>
                             </button>
                         </div>

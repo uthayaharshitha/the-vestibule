@@ -66,7 +66,6 @@ export default function SensoryNotes({ notes, hideTitle, isNewDesign, accentColo
                                     fontSize: '0.6rem',
                                     fontWeight: 700,
                                     letterSpacing: '0.12em',
-                                    textTransform: 'uppercase',
                                 }}
                             >
                                 {note.note_text}

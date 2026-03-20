@@ -81,7 +81,7 @@ export default function CapsuleCard({ capsule, revealDelay = 0 }: CapsuleCardPro
                         }}
                     >
                         <h3
-                            className="text-xs font-bold uppercase tracking-widest leading-relaxed break-words font-mono"
+                            className="text-xs font-bold tracking-widest leading-relaxed break-words font-mono"
                             style={{ color: getBrightThemeColor(themeColor), textShadow: '0 2px 6px rgba(0,0,0,0.9)' }}
                         >
                             {capsule.title}
