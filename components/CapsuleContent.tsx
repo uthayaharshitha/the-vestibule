@@ -23,6 +23,40 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
     const { isReadMode, setIsReadMode } = useReadMode();
     const router = useRouter();
     const [isDrifting, setIsDrifting] = useState(false);
+    const containerRef = useRef<HTMLDivElement>(null);
+
+    // Enter/Exit Fullscreen when isReadMode toggles
+    useEffect(() => {
+        const el = containerRef.current;
+        if (!el) return;
+
+        if (isReadMode) {
+            if (!document.fullscreenElement) {
+                if (el.requestFullscreen) {
+                    el.requestFullscreen().catch((err) => {
+                        console.warn("Fullscreen API failed, relying on CSS fallback:", err);
+                    });
+                }
+            }
+        } else {
+            if (document.fullscreenElement) {
+                if (document.exitFullscreen) {
+                    document.exitFullscreen().catch(() => {});
+                }
+            }
+        }
+    }, [isReadMode]);
+
+    // Sync native fullscreen exits (ESC key, swipe back) with React state
+    useEffect(() => {
+        const handleFullscreenChange = () => {
+            if (!document.fullscreenElement && isReadMode) {
+                setIsReadMode(false);
+            }
+        };
+        document.addEventListener('fullscreenchange', handleFullscreenChange);
+        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    }, [isReadMode, setIsReadMode]);
 
     // ── Ambient audio state ──────────────────────────────────────────────────
     const audioRef = useRef<HTMLAudioElement>(null);
@@ -120,15 +154,19 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
     const bodyText = isLightText ? 'rgba(255,255,255,0.85)' : 'rgba(0,0,0,0.75)';
 
     return (
-        <div className="capsule-page-transition">
+        <div 
+            ref={containerRef}
+            className={`capsule-page-transition ${isReadMode ? 'read-mode-fullscreen' : ''}`}
+            style={isReadMode ? { backgroundColor: 'var(--bg-main)', overflowY: 'auto', minHeight: '100vh', padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' } : {}}
+        >
 
             {/* ── READ MODE controls (fixed, top-right) ── */}
             {isReadMode && (
                 <div
                     style={{
                         position: 'fixed',
-                        top: '20px',
-                        right: '20px',
+                        top: 'calc(env(safe-area-inset-top, 0px) + 20px)',
+                        right: 'calc(env(safe-area-inset-right, 0px) + 20px)',
                         zIndex: 1000,
                         display: 'flex',
                         gap: '20px',
@@ -182,9 +220,9 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
                 <div
                     style={{
                         position: 'fixed',
-                        top: '20px',
-                        left: '20px',
-                        zIndex: 1000,
+                        top: 'calc(env(safe-area-inset-top, 0px) + 20px)',
+                        left: 'calc(env(safe-area-inset-left, 0px) + 20px)',
+                        zIndex: 100000,
                         color: textColor,
                     }}
                 >
@@ -200,11 +238,11 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
 
                 {/* ── MAIN CAPSULE CONTAINER ── */}
                 <div
-                    className="capsule-double-border capsule-bg-overlay"
+                    className={`capsule-double-border capsule-bg-overlay ${isReadMode ? 'border-none shadow-none md:p-12 p-6' : ''}`}
                     style={{
-                        borderColor: accentColor,
-                        outlineColor: accentColor,
-                        boxShadow: `0 0 40px ${accentGlow}`,
+                        borderColor: isReadMode ? 'transparent' : accentColor,
+                        outlineColor: isReadMode ? 'transparent' : accentColor,
+                        boxShadow: isReadMode ? 'none' : `0 0 40px ${accentGlow}`,
                     }}
                 >
 

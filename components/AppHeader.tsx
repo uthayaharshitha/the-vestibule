@@ -7,6 +7,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import SearchBar from './SearchBar';
 import { getRandomCapsule } from '@/lib/capsule-queries';
 import { useReadMode } from '@/contexts/ReadModeContext';
+import { useUnsavedChangesContext } from '@/contexts/UnsavedChangesContext';
 
 export default function AppHeader() {
     const [user, setUser] = useState<any>(null);
@@ -15,6 +16,7 @@ export default function AppHeader() {
     const [isDrifting, setIsDrifting] = useState(false);
     const { isReadMode } = useReadMode();
     const [menuOpen, setMenuOpen] = useState(false);
+    const { confirmNavigation } = useUnsavedChangesContext();
 
     useEffect(() => {
         getCurrentUser().then(setUser);
@@ -25,14 +27,16 @@ export default function AppHeader() {
         setMenuOpen(false);
     }, [pathname]);
 
-    const handleDrift = async () => {
-        setIsDrifting(true);
-        setMenuOpen(false);
-        const { capsule } = await getRandomCapsule();
-        if (capsule) {
-            router.push(`/capsule/${capsule.id}`);
-        }
-        setIsDrifting(false);
+    const handleDrift = () => {
+        confirmNavigation(async () => {
+            setIsDrifting(true);
+            setMenuOpen(false);
+            const { capsule } = await getRandomCapsule();
+            if (capsule) {
+                router.push(`/capsule/${capsule.id}`);
+            }
+            setIsDrifting(false);
+        });
     };
 
     // Don't show header on login/signup/landing pages

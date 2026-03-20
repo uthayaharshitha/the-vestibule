@@ -2,9 +2,16 @@
 
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUnsavedChangesContext } from '@/contexts/UnsavedChangesContext';
 
 export function useUnsavedChanges(isDirty: boolean) {
     const router = useRouter();
+    const { setIsDirty } = useUnsavedChangesContext();
+
+    useEffect(() => {
+        setIsDirty(isDirty);
+        return () => setIsDirty(false); // Clean up
+    }, [isDirty, setIsDirty]);
 
     useEffect(() => {
         // beforeunload for tab close / refresh
@@ -42,6 +49,7 @@ export function useUnsavedChanges(isDirty: boolean) {
                         // Show native confirmation dialog
                         if (window.confirm('You have unsaved changes. Are you sure you want to leave?')) {
                             // Proceed with navigation
+                            setIsDirty(false);
                             router.push(url.pathname + url.search + url.hash);
                         }
                     }
@@ -53,5 +61,5 @@ export function useUnsavedChanges(isDirty: boolean) {
 
         document.addEventListener('click', handleClick, { capture: true });
         return () => document.removeEventListener('click', handleClick, { capture: true });
-    }, [isDirty, router]);
+    }, [isDirty, router, setIsDirty]);
 }

@@ -10,6 +10,7 @@ import { ReadModeProvider } from "@/contexts/ReadModeContext";
 import GrainOverlay from "@/components/GrainOverlay";
 import { CapsuleUploadProvider } from "@/contexts/CapsuleUploadContext";
 import PostingBanner from "@/components/PostingBanner";
+import { UnsavedChangesProvider } from "@/contexts/UnsavedChangesContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -48,8 +49,9 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} ${spaceGrotesk.variable} ${jetbrainsMono.variable} antialiased`}
       >
-        <ReadModeProvider>
-          <ThemeProvider>
+        <UnsavedChangesProvider>
+          <ReadModeProvider>
+            <ThemeProvider>
             <ToastProvider>
               <CapsuleUploadProvider>
                 <AppHeader />
@@ -62,6 +64,7 @@ export default function RootLayout({
             </ToastProvider>
           </ThemeProvider>
         </ReadModeProvider>
+        </UnsavedChangesProvider>
         <GrainOverlay />
       </body>
     </html>

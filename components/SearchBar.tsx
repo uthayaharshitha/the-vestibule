@@ -2,16 +2,20 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
+import { useUnsavedChangesContext } from '@/contexts/UnsavedChangesContext';
 
 export default function SearchBar() {
     const [query, setQuery] = useState('');
     const router = useRouter();
+    const { confirmNavigation } = useUnsavedChangesContext();
 
     const handleSearch = (e: React.FormEvent) => {
         e.preventDefault();
         if (query.trim()) {
-            router.push(`/search?q=${encodeURIComponent(query.trim())}`);
-            setQuery(''); // Optional: clear after search
+            confirmNavigation(() => {
+                router.push(`/search?q=${encodeURIComponent(query.trim())}`);
+                setQuery(''); // Optional: clear after search
+            });
         }
     };
 

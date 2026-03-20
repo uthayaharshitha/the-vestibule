@@ -106,6 +106,32 @@ body[data-read-mode="true"] main {
   transition: padding-top 0.3s ease;
 }
 
+/* Fallback for true Fullscreen API failures (like iOS WebKit) */
+.read-mode-fullscreen {
+  position: fixed !important;
+  top: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  z-index: 99999 !important;
+  overflow-y: auto !important;
+  background: var(--bg-main) !important;
+  margin: 0 !important;
+}
+
+/* Ensure native fullscreen gets proper scrolling handling and notch evasion */
+:fullscreen {
+  overflow-y: auto !important;
+  background: var(--bg-main) !important;
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
+}
+
+:fullscreen .capsule-double-border {
+  border: none !important;
+  box-shadow: none !important;
+  padding: 1.5rem !important;
+}
+
 /* ─── Global form inputs ──────────────────────────── */
 input,
 textarea,
