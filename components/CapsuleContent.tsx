@@ -25,39 +25,6 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
     const [isDrifting, setIsDrifting] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
 
-    // Enter/Exit Fullscreen when isReadMode toggles
-    useEffect(() => {
-        const el = containerRef.current;
-        if (!el) return;
-
-        if (isReadMode) {
-            if (!document.fullscreenElement) {
-                if (el.requestFullscreen) {
-                    el.requestFullscreen().catch((err) => {
-                        console.warn("Fullscreen API failed, relying on CSS fallback:", err);
-                    });
-                }
-            }
-        } else {
-            if (document.fullscreenElement) {
-                if (document.exitFullscreen) {
-                    document.exitFullscreen().catch(() => {});
-                }
-            }
-        }
-    }, [isReadMode]);
-
-    // Sync native fullscreen exits (ESC key, swipe back) with React state
-    useEffect(() => {
-        const handleFullscreenChange = () => {
-            if (!document.fullscreenElement && isReadMode) {
-                setIsReadMode(false);
-            }
-        };
-        document.addEventListener('fullscreenchange', handleFullscreenChange);
-        return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    }, [isReadMode, setIsReadMode]);
-
     // ── Ambient audio state ──────────────────────────────────────────────────
     const audioRef = useRef<HTMLAudioElement>(null);
     const [isPlaying, setIsPlaying] = useState(false);

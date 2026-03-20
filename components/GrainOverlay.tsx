@@ -66,7 +66,7 @@ export default function GrainOverlay() {
                     width: '100vw',
                     height: '100vh',
                     pointerEvents: 'none',
-                    zIndex: 9998,
+                    zIndex: 2147483647,
                     opacity: 0.22,
                     mixBlendMode: 'screen',
                     imageRendering: 'pixelated', // keeps grain chunky, not blurred
@@ -80,7 +80,7 @@ export default function GrainOverlay() {
                     position: 'fixed',
                     inset: 0,
                     pointerEvents: 'none',
-                    zIndex: 9997,
+                    zIndex: 2147483647,
                     backgroundImage:
                         'repeating-linear-gradient(to bottom, transparent 0px, transparent 3px, rgba(0,0,0,0.22) 3px, rgba(0,0,0,0.22) 4px)',
                 }}
