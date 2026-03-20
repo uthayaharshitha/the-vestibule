@@ -5,7 +5,6 @@ export default async function EditCapsulePage({ params }: { params: Promise<{ id
     const { id } = await params;
     return (
         <main className="min-h-screen" style={{ background: 'var(--bg-main)' }}>
-            <AppHeader />
             <div className="pt-20">
                 <CapsuleEditForm capsuleId={id} />
             </div>

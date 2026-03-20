@@ -8,6 +8,7 @@ import { useCapsuleUpload } from '@/contexts/CapsuleUploadContext';
 import { useToast } from '@/contexts/ToastContext';
 import { supabase } from '@/lib/supabase';
 import TagInput from '@/components/TagInput';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 
 interface CapsuleEditFormProps { capsuleId: string; }
 
@@ -46,7 +47,19 @@ function UploadTile({ previewUrl, isVideo, progress, status, onRemove, onRetry, 
                     {onRetry && <button type="button" onClick={onRetry} style={{ fontSize: 9, color: '#fff', background: 'rgba(255,255,255,0.15)', border: 'none', borderRadius: 3, padding: '2px 6px', cursor: 'pointer' }}>retry</button>}
                 </div>
             )}
-            <button type="button" onClick={onRemove} className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, cursor: 'pointer', lineHeight: 1 }}>×</button>
+            <button
+                type="button"
+                onClick={onRemove}
+                className="absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 opacity-80 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2"
+                style={{ minWidth: 44, minHeight: 44, background: 'transparent', border: 'none', cursor: 'pointer' }}
+            >
+                <div style={{
+                    width: 20, height: 20, borderRadius: '50%',
+                    background: 'rgba(0,0,0,0.7)', color: '#fff',
+                    display: 'flex', alignItems: 'center', justifyContent: 'center',
+                    fontSize: 12, lineHeight: 1, pointerEvents: 'none'
+                }}>×</div>
+            </button>
             <ProgressBar pct={progress} done={status === 'done'} error={status === 'error'} />
         </div>
     );
@@ -71,6 +84,8 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
     const [coverUpload, setCoverUpload] = useState<SingleUpload | null>(null);
     const [audioUpload, setAudioUpload] = useState<SingleUpload | null>(null);
     const [error, setError] = useState<string | null>(null);
+    const [initialState, setInitialState] = useState<any>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const { items: newMediaItems, addFiles, removeFile, retryFile, clearAll, uploadingCount } = useMediaUploadQueue('capsule-media');
     const userIdRef = useRef<string | null>(null);
@@ -100,10 +115,33 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
             if (notes?.length) setFragranceNotes(notes.map((n: any) => n.note_text));
             if (media) setExistingMedia(media);
             if (audio) setExistingAudio(audio);
+
+            if (capsule) {
+                setInitialState({
+                    title: capsule.title,
+                    description: capsule.description || '',
+                    themeColor: capsule.theme_color || '#F5F5F5',
+                    fragranceNotes: notes?.length ? notes.map((n: any) => n.note_text) : []
+                });
+            }
+
             setLoading(false);
         };
         fetchData();
     }, [capsuleId]);
+
+    const isDirty = initialState && !isSubmitting && (
+        title !== initialState.title ||
+        description !== initialState.description ||
+        themeColor !== initialState.themeColor ||
+        coverUpload !== null ||
+        audioUpload !== null ||
+        newMediaItems.length > 0 ||
+        mediaToRemove.length > 0 ||
+        audioToRemove.length > 0 ||
+        JSON.stringify(fragranceNotes) !== JSON.stringify(initialState.fragranceNotes)
+    );
+    useUnsavedChanges(!!isDirty);
 
     // ── Single file upload helper ────────────────────────────────────────────
     const uploadSingleFile = async (file: File, pathPrefix: string, contentType: string, setter: Dispatch<SetStateAction<SingleUpload | null>>) => {
@@ -167,6 +205,7 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
         if (pendingUploads > 0) { setError('Please wait for uploads to finish.'); return; }
 
         setError(null);
+        setIsSubmitting(true);
 
         const coverImageUrl = coverUpload?.uploadedUrl ?? undefined;
         const audioUrl = audioUpload?.uploadedUrl ?? undefined;
@@ -236,8 +275,10 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                     {coverUpload && (
                         <div className="mt-2 relative inline-block" style={{ width: 120, height: 120 }}>
                             <img src={coverUpload.previewUrl} alt="Cover preview" style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 6, border: '1px solid var(--border-color)' }} />
-                            <ProgressBar pct={coverUpload.progress} done={coverUpload.status === 'done'} error={coverUpload.status === 'error'} />
                             {coverUpload.status === 'done' && <div style={{ position: 'absolute', top: 4, left: 4, width: 18, height: 18, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 10 }}>✓</div>}
+                            <button type="button" onClick={() => setCoverUpload(null)} style={{ position: 'absolute', top: -8, right: -8, minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, pointerEvents: 'none' }}>×</div>
+                            </button>
                         </div>
                     )}
                 </div>
@@ -252,7 +293,19 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                             {existingMedia.map((media) => (
                                 <div key={media.id} className="relative aspect-square rounded overflow-hidden group" style={{ border: '1px solid var(--border-color)' }}>
                                     {media.media_type === 'image' ? <img src={media.file_url} alt="Media" className="w-full h-full object-cover" /> : <video src={media.file_url} className="w-full h-full object-cover" muted />}
-                                    <button type="button" onClick={() => handleRemoveMedia(media.id)} className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity" style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(220,38,38,0.8)', color: '#fff', border: 'none', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, cursor: 'pointer' }}>×</button>
+                                    <button
+                                        type="button"
+                                        onClick={() => handleRemoveMedia(media.id)}
+                                        className="absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 opacity-80 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2"
+                                        style={{ minWidth: 44, minHeight: 44, background: 'transparent', border: 'none', cursor: 'pointer' }}
+                                    >
+                                        <div style={{
+                                            width: 20, height: 20, borderRadius: '50%',
+                                            background: 'rgba(220,38,38,0.8)', color: '#fff',
+                                            display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                            fontSize: 12, pointerEvents: 'none'
+                                        }}>×</div>
+                                    </button>
                                 </div>
                             ))}
                         </div>
@@ -296,7 +349,7 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                             <span style={{ fontSize: 12, color: 'var(--text-secondary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {audioUpload.status === 'done' ? '✓ ' : audioUpload.status === 'error' ? '✗ ' : ''}{audioUpload.file.name}
                             </span>
-                            <button type="button" onClick={() => setAudioUpload(null)} style={{ fontSize: 12, color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+                            <button type="button" onClick={() => setAudioUpload(null)} style={{ fontSize: 16, padding: '10px 14px', margin: '-10px -14px', color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
                             <ProgressBar pct={audioUpload.progress} done={audioUpload.status === 'done'} error={audioUpload.status === 'error'} />
                         </div>
                     )}
@@ -305,7 +358,10 @@ export default function CapsuleEditForm({ capsuleId }: CapsuleEditFormProps) {
                 {error && <div className="p-3 text-sm rounded" style={{ background: 'rgba(239,68,68,0.08)', color: '#f87171', border: '1px solid rgba(239,68,68,0.2)' }}>{error}</div>}
 
                 <div className="flex gap-4">
-                    <button type="button" onClick={() => router.back()} className="archive-btn opacity-60 hover:opacity-100">CANCEL</button>
+                    <button type="button" onClick={() => {
+                        if (isDirty && !window.confirm('You have unsaved changes. Are you sure you want to leave?')) return;
+                        router.back();
+                    }} className="archive-btn opacity-60 hover:opacity-100">CANCEL</button>
                     <button type="submit" className="archive-btn">SAVE CHANGES</button>
                 </div>
             </form>

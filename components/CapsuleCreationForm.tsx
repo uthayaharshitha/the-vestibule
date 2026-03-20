@@ -8,6 +8,7 @@ import { useCapsuleUpload } from '@/contexts/CapsuleUploadContext';
 import { useToast } from '@/contexts/ToastContext';
 import TagInput from '@/components/TagInput';
 import { supabase } from '@/lib/supabase';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 
 // ─── Tiny helper: single-file upload state ───────────────────────────────────
 interface SingleUpload {
@@ -98,14 +99,16 @@ function UploadTile({
             <button
                 type="button"
                 onClick={onRemove}
-                className="absolute top-1 right-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                style={{
+                className="absolute top-0 right-0 md:opacity-0 md:group-hover:opacity-100 opacity-80 transition-opacity flex items-center justify-center pt-1 pr-1 pb-2 pl-2"
+                style={{ minWidth: 44, minHeight: 44, background: 'transparent', border: 'none', cursor: 'pointer' }}
+            >
+                <div style={{
                     width: 20, height: 20, borderRadius: '50%',
-                    background: 'rgba(0,0,0,0.7)', color: '#fff', border: 'none',
+                    background: 'rgba(0,0,0,0.7)', color: '#fff',
                     display: 'flex', alignItems: 'center', justifyContent: 'center',
-                    fontSize: 12, cursor: 'pointer', lineHeight: 1,
-                }}
-            >×</button>
+                    fontSize: 12, lineHeight: 1, pointerEvents: 'none'
+                }}>×</div>
+            </button>
 
             <ProgressBar pct={progress} done={status === 'done'} error={status === 'error'} />
         </div>
@@ -124,6 +127,7 @@ export default function CapsuleCreationForm() {
     const [fragranceNotes, setFragranceNotes] = useState<string[]>([]);
     const [includeCoverInMedia, setIncludeCoverInMedia] = useState(false);
     const [error, setError] = useState<string | null>(null);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     // Cover image single upload state
     const [coverUpload, setCoverUpload] = useState<SingleUpload | null>(null);
@@ -141,6 +145,9 @@ export default function CapsuleCreationForm() {
     }, []);
 
     const getUserId = () => userIdRef.current ?? 'anonymous';
+
+    const isDirty = title.trim() !== '' || description.trim() !== '' || themeColor !== '#F5F5F5' || coverUpload !== null || audioUpload !== null || mediaItems.length > 0 || fragranceNotes.length > 0;
+    useUnsavedChanges(isDirty && !isSubmitting);
 
     // ── Single file upload helper ────────────────────────────────────────────
     const uploadSingleFile = async (
@@ -235,6 +242,7 @@ export default function CapsuleCreationForm() {
         }
 
         setError(null);
+        setIsSubmitting(true);
 
         // Collect uploaded URLs
         const coverImageUrl = coverUpload?.uploadedUrl ?? undefined;
@@ -330,7 +338,9 @@ export default function CapsuleCreationForm() {
                             {coverUpload.status === 'done' && (
                                 <div style={{ position: 'absolute', top: 4, left: 4, width: 18, height: 18, borderRadius: '50%', background: 'rgba(0,0,0,0.55)', display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'rgba(255,255,255,0.8)', fontSize: 10 }}>✓</div>
                             )}
-                            <button type="button" onClick={() => setCoverUpload(null)} style={{ position: 'absolute', top: 4, right: 4, width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', border: 'none', cursor: 'pointer', fontSize: 12 }}>×</button>
+                            <button type="button" onClick={() => setCoverUpload(null)} style={{ position: 'absolute', top: -8, right: -8, minWidth: 44, minHeight: 44, display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'transparent', border: 'none', cursor: 'pointer' }}>
+                                <div style={{ width: 20, height: 20, borderRadius: '50%', background: 'rgba(0,0,0,0.7)', color: '#fff', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: 12, pointerEvents: 'none' }}>×</div>
+                            </button>
                         </div>
                     )}
 
@@ -395,7 +405,7 @@ export default function CapsuleCreationForm() {
                             <span style={{ fontSize: 12, color: 'var(--text-secondary)', flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                                 {audioUpload.status === 'done' ? '✓ ' : audioUpload.status === 'error' ? '✗ ' : ''}{audioUpload.file.name}
                             </span>
-                            <button type="button" onClick={() => setAudioUpload(null)} style={{ fontSize: 12, color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
+                            <button type="button" onClick={() => setAudioUpload(null)} style={{ fontSize: 16, padding: '10px 14px', margin: '-10px -14px', color: 'var(--text-tertiary)', background: 'none', border: 'none', cursor: 'pointer' }}>×</button>
                             <ProgressBar pct={audioUpload.progress} done={audioUpload.status === 'done'} error={audioUpload.status === 'error'} />
                         </div>
                     )}

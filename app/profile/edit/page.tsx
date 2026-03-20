@@ -8,6 +8,7 @@ import { updateUserProfile } from '@/lib/user-mutations';
 import { checkUsernameAvailable } from '@/lib/user-queries';
 import { useToast } from '@/contexts/ToastContext';
 import { supabase } from '@/lib/supabase';
+import { useUnsavedChanges } from '@/hooks/useUnsavedChanges';
 
 const USERNAME_RE = /^[a-z0-9_]{3,20}$/;
 
@@ -28,6 +29,13 @@ export default function ProfileEditPage() {
     const [bannerPreview, setBannerPreview] = useState<string | null>(null);
     const [saving, setSaving] = useState(false);
     const [error, setError] = useState<string | null>(null);
+
+    const isDirty = !loading && !saving && (
+        username !== currentUsername ||
+        pfpFile !== null ||
+        bannerFile !== null
+    );
+    useUnsavedChanges(isDirty);
 
     useEffect(() => {
         const init = async () => {
@@ -219,7 +227,10 @@ export default function ProfileEditPage() {
                     <div className="flex gap-4 mt-4">
                         <button
                             type="button"
-                            onClick={() => router.back()}
+                            onClick={() => {
+                                if (isDirty && !window.confirm('You have unsaved changes. Are you sure you want to leave?')) return;
+                                router.back();
+                            }}
                             className="archive-btn opacity-60 hover:opacity-100"
                         >
                             Cancel
