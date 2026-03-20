@@ -115,14 +115,12 @@ body[data-read-mode="true"] main {
   height: 100vh !important;
   z-index: 99999 !important;
   overflow-y: auto !important;
-  background: var(--bg-main) !important;
   margin: 0 !important;
 }
 
 /* Ensure native fullscreen gets proper scrolling handling and notch evasion */
 :fullscreen {
   overflow-y: auto !important;
-  background: var(--bg-main) !important;
   padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left) !important;
 }
 

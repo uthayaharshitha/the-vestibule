@@ -157,7 +157,7 @@ export default function CapsuleContent({ capsule, id, themeColor, textColor, isL
         <div 
             ref={containerRef}
             className={`capsule-page-transition ${isReadMode ? 'read-mode-fullscreen' : ''}`}
-            style={isReadMode ? { backgroundColor: 'var(--bg-main)', overflowY: 'auto', minHeight: '100vh', padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' } : {}}
+            style={isReadMode ? { backgroundColor: themeColor, overflowY: 'auto', minHeight: '100vh', padding: 'env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)' } : {}}
         >
 
             {/* ── READ MODE controls (fixed, top-right) ── */}
